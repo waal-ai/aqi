@@ -110,7 +110,7 @@ function showData(userLat, userLon) {
         });
         updateUI(avg)
     }
-    const numberOfSensors = 5
+    const numberOfSensors = 1
     const nearestSensors = getNearestSensors(userLat, userLon, numberOfSensors)
     nearestSensors.forEach(async function(sensor) {
         makeRequest(sensor)
