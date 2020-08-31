@@ -1,7 +1,7 @@
 var mapWidth = 400
 var mapHeight = 300
 
-const ConcernLevel = {
+var ConcernLevel = {
     good: {
     	level: 'Good',
      	description: "Air quality is satisfactory, and air pollution poses little or no risk.",
@@ -10,31 +10,31 @@ const ConcernLevel = {
 
 	moderate: {
 		level: 'Moderate', 
-		description: "Air quality is acceptable. However, there may be a risk for some people, particularly those who are unusually sensitive to air pollution.",
+		description: "Air quality is satisfactory, and air pollution poses little or no risk.",
 		color: '#ffd300'
 	},
 
 	unhealthyForSensitive: {
 		level: 'Unhealthy for Sensitive Groups',
-		description: "Members of sensitive groups may experience health effects. The general public is less likely to be affected.",
+		description: "Air quality is satisfactory, and air pollution poses little or no risk.",
      	color: '#ff7518'
 	},
 
 	unhealthy: {
 		level: 'Unhealthy',
-		description: "Some members of the general public may experience health effects; members of sensitive groups may experience more serious health effects.",
+		description: "Air quality is satisfactory, and air pollution poses little or no risk.",
      	color: '#ff0038'
 	},
 
 	veryUnhealthy: {
-		level: 'Very Unhealthy',
-		description: "Health alert: The risk of health effects is increased for everyone.",
+		level: 'Very Unhealth',
+		description: "Air quality is satisfactory, and air pollution poses little or no risk.",
      	color: '#6f2da8'
 	},
 
 	hazardous: {
 		level: 'Hazardous',
-		description: "Health warning of emergency conditions: everyone is more likely to be affected.",
+		description: "Air quality is satisfactory, and air pollution poses little or no risk.",
      	color: '#b22222'
 	}
 }
@@ -55,9 +55,10 @@ function getConcernLevel(aqi) {
     }
 }
 
+requestApproximateLocation()
 var storedLocation = localStorage.getItem("location");
 if (storedLocation === null) {
-    getLocation()
+    requestPreciseLocation()
 } else {
     var storedLocationTokens = storedLocation.split(",")
     var lat = storedLocationTokens[0]
@@ -65,8 +66,25 @@ if (storedLocation === null) {
     showData(lat, lon)
 }
 
+$("#locationButton").click(function() {
+    requestPreciseLocation()
+})
 
-function getLocation() {
+function showAddress(addr) {
+    $("#city input").val(addr)
+}
+
+function requestApproximateLocation() {
+    $.getJSON('https://ipinfo.io/json?token=35b3c9341b6578', function(data) {
+        showAddress(data.city + ", " + data.region)
+        var locTokens = data.loc.split(",")
+        var lat = locTokens[0]
+        var lon  = locTokens[1]
+        showData(lat, lon)
+    });
+}
+
+function requestPreciseLocation() {
     navigator.geolocation.getCurrentPosition(processLocation,
         function(error) {
             console.log("The location request was denied")
@@ -74,21 +92,22 @@ function getLocation() {
 }
 
 function updateUI(aqi) {
-	const concernLevel = getConcernLevel(aqi)
+	var concernLevel = getConcernLevel(aqi)
 	$("#aqi").html(aqi)
 	$("#severity").html(concernLevel.level)
 	$("#details").html(concernLevel.description)
 	$("#circle").css('background-color', concernLevel.color);
 
-    const currentDate = new Date()
+    var currentDate = new Date()
     let formattedTime = currentDate.toLocaleTimeString(navigator.language)
     $("#updated").html("Updated at " + formattedTime)
 }
 
 function processLocation(position) {
-    const lat = position.coords.latitude
-    const lon = position.coords.longitude
-    const latString = lat + "," + lon
+    var lat = position.coords.latitude
+    var lon = position.coords.longitude
+    var latString = lat + "," + lon
+    console.log("requested location: ", latString)
     localStorage.setItem("location", latString)
     showData(lat, lon)
 }
@@ -97,11 +116,11 @@ function showData(userLat, userLon) {
     generateMap(userLat, userLon)
 
     async function makeRequest(sensor) {
-        const id = sensor["THINGSPEAK_PRIMARY_ID"]
-        const key = sensor["THINGSPEAK_PRIMARY_ID_READ_KEY"]
+        var id = sensor["THINGSPEAK_PRIMARY_ID"]
+        var key = sensor["THINGSPEAK_PRIMARY_ID_READ_KEY"]
         var avg = 0
         var count = 0
-        const url = 'https://api.thingspeak.com/channels/' + id + '/fields/2/last.json?api_key=' + key + '&results=1';
+        var url = 'https://api.thingspeak.com/channels/' + id + '/fields/2/last.json?api_key=' + key + '&results=1';
         await $.getJSON(url, function(data) {
             var pm = data["field2"]
             var aqi = ct(pm)
@@ -110,8 +129,8 @@ function showData(userLat, userLon) {
         });
         updateUI(avg)
     }
-    const numberOfSensors = 1
-    const nearestSensors = getNearestSensors(userLat, userLon, numberOfSensors)
+    var numberOfSensors = 1
+    var nearestSensors = getNearestSensors(userLat, userLon, numberOfSensors)
     nearestSensors.forEach(async function(sensor) {
         makeRequest(sensor)
     })
@@ -119,6 +138,31 @@ function showData(userLat, userLon) {
 
 function generateMap(lat, lon) {
     $("#minimap h2").hide();
-    const url = "https://maps.googleapis.com/maps/api/staticmap?center=" + lat + "," + lon + "&zoom=12&size="+mapWidth+"x"+mapHeight+"&key=AIzaSyChhpcGAq1GKr9BEmqYIF7tVnIjWYJnDRw"
+    var url = "https://maps.googleapis.com/maps/api/staticmap?center=" + lat + "," + lon + "&zoom=12&size="+mapWidth+"x"+mapHeight+"&key=AIzaSyChhpcGAq1GKr9BEmqYIF7tVnIjWYJnDRw"
     $("#minimap img").attr("src", url);
 }
+
+function findAddress(val) {
+    var requestUrl = "https://maps.googleapis.com/maps/api/geocode/json?address="+val+"&key=AIzaSyChhpcGAq1GKr9BEmqYIF7tVnIjWYJnDRw"
+    $.getJSON(requestUrl, function(data) {
+       console.log(data)
+       var location = data.results[0].geometry.location
+       var lat = location.lat
+       var lon = location.lng
+        $("#minimap h2").show();
+       showData(lat, lon)
+    });
+}
+
+$("#locationButton").click(function() {
+    var val = $("#city input").val()
+    findAddress(val)
+})
+
+$("#city input").keypress(function (e) {
+    if (e.which == 13) {
+        var val = $(this).val().replaceAll(' ', '+')
+        findAddress(val)
+    }
+});
+
