@@ -79,6 +79,10 @@ function updateUI(aqi) {
 	$("#severity").html(concernLevel.level)
 	$("#details").html(concernLevel.description)
 	$("#circle").css('background-color', concernLevel.color);
+
+    const currentDate = new Date()
+    let formattedTime = currentDate.toLocaleTimeString(navigator.language)
+    $("#updated").html("Updated at " + formattedTime)
 }
 
 function processLocation(position) {
