@@ -9,32 +9,32 @@ var ConcernLevel = {
  	},
 
 	moderate: {
-		level: 'Moderate', 
-		description: "Air quality is satisfactory, and air pollution poses little or no risk.",
+		level: 'Moderate',
+		description: "Air quality is acceptable. However, there may be a risk for some people, particularly those who are unusually sensitive to air pollution.",
 		color: '#ffd300'
 	},
 
 	unhealthyForSensitive: {
-		level: 'Unhealthy for Sensitive Groups',
-		description: "Air quality is satisfactory, and air pollution poses little or no risk.",
+		level: 'Unhealthy',
+		description: "Members of sensitive groups may experience health effects. The general public is less likely to be affected.",
      	color: '#ff7518'
 	},
 
 	unhealthy: {
-		level: 'Unhealthy',
-		description: "Air quality is satisfactory, and air pollution poses little or no risk.",
+		level: 'Unhealthy for Sensitive Groups',
+		description: "Some members of the general public may experience health effects; members of sensitive groups may experience more serious health effects.",
      	color: '#ff0038'
 	},
 
 	veryUnhealthy: {
-		level: 'Very Unhealth',
-		description: "Air quality is satisfactory, and air pollution poses little or no risk.",
+		level: 'Very Unhealthy',
+		description: "Health alert: The risk of health effects is increased for everyone.",
      	color: '#6f2da8'
 	},
 
 	hazardous: {
 		level: 'Hazardous',
-		description: "Air quality is satisfactory, and air pollution poses little or no risk.",
+		description: "Health warning of emergency conditions: everyone is more likely to be affected.",
      	color: '#b22222'
 	}
 }
