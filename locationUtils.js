@@ -1,5 +1,4 @@
 function getNearestSensors(userLat, userLon, numberOfSensors) {
-	console.log("getNearestSensors for: ", userLat, userLon)
     function calculateDistance(lat1, lon1, lat2, lon2, unit) {
         var radlat1 = Math.PI * lat1 / 180
         var radlat2 = Math.PI * lat2 / 180

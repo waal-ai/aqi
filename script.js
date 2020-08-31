@@ -1,3 +1,6 @@
+var mapWidth = 400
+var mapHeight = 300
+
 const ConcernLevel = {
     good: {
     	level: 'Good',
@@ -52,13 +55,10 @@ function getConcernLevel(aqi) {
     }
 }
 
-
 var storedLocation = localStorage.getItem("location");
 if (storedLocation === null) {
-    console.log("No location data in local storage")
     getLocation()
 } else {
-    console.log("Location loaded from local storage")
     var storedLocationTokens = storedLocation.split(",")
     var lat = storedLocationTokens[0]
     var lon = storedLocationTokens[1]
@@ -67,15 +67,13 @@ if (storedLocation === null) {
 
 
 function getLocation() {
-    document.getElementById("geo").textContent = "Obtaining Location..."
     navigator.geolocation.getCurrentPosition(processLocation,
         function(error) {
             console.log("The location request was denied")
-        })
+    })
 }
 
 function updateUI(aqi) {
-	console.log(aqi)
 	const concernLevel = getConcernLevel(aqi)
 	$("#aqi").html(aqi)
 	$("#severity").html(concernLevel.level)
@@ -87,36 +85,11 @@ function processLocation(position) {
     const lat = position.coords.latitude
     const lon = position.coords.longitude
     const latString = lat + "," + lon
-    console.log("location obtained: " + latString)
     localStorage.setItem("location", latString)
     showData(lat, lon)
 }
 
-function showAddress(lat, lon) {
-    console.log("show address", lat, lon)
-    const geocoder = new google.maps.Geocoder();
-    const latlng = {
-        lat: parseFloat(lat),
-        lng: parseFloat(lon)
-    };
-    geocoder.geocode({
-        location: latlng
-    }, (results, status) => {
-        if (status === "OK") {
-            if (results[0]) {
-                $("#card_header h4").html(results[0]["formatted_address"])
-            } else {
-                window.alert("No results found");
-            }
-        } else {
-            window.alert("Geocoder failed due to: " + status);
-        }
-    });
-}
-
 function showData(userLat, userLon) {
-    console.log("showData", userLat, userLon)
-    showAddress(lat, lon)
     generateMap(userLat, userLon)
 
     async function makeRequest(sensor) {
@@ -128,7 +101,6 @@ function showData(userLat, userLon) {
         await $.getJSON(url, function(data) {
             var pm = data["field2"]
             var aqi = ct(pm)
-            console.log(data);
             count++
             avg = (avg += aqi) / count
         });
@@ -136,14 +108,13 @@ function showData(userLat, userLon) {
     }
     const numberOfSensors = 5
     const nearestSensors = getNearestSensors(userLat, userLon, numberOfSensors)
-    console.log("nearestSensors", nearestSensors)
     nearestSensors.forEach(async function(sensor) {
         makeRequest(sensor)
     })
 }
 
 function generateMap(lat, lon) {
-    console.log("generating map for: ", lat, lon)
-    const url = "https://maps.googleapis.com/maps/api/staticmap?center=" + lat + "," + lon + "&zoom=12&size=400x225&key=AIzaSyChhpcGAq1GKr9BEmqYIF7tVnIjWYJnDRw"
+    $("#minimap h2").hide();
+    const url = "https://maps.googleapis.com/maps/api/staticmap?center=" + lat + "," + lon + "&zoom=12&size="+mapWidth+"x"+mapHeight+"&key=AIzaSyChhpcGAq1GKr9BEmqYIF7tVnIjWYJnDRw"
     $("#minimap img").attr("src", url);
 }

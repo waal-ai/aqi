@@ -2,8 +2,6 @@
 <html>
 <head>
 	<title>Air</title>
-	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyChhpcGAq1GKr9BEmqYIF7tVnIjWYJnDRw"></script>
-
   	<meta name="viewport" content="width=device-width, initial-scale=1.0">
   	<style type="text/css">
   		body {
@@ -25,15 +23,19 @@
   			padding: 8px 8px 8px 8px;
   		}
   		#minimap {
-  			height:225px;
-  			background-color: gray;
+  			height:300px;
+        text-align: center;
   		}
+
+      #minimap h2 {
+        padding-top: 50px;
+      }
 
   		#circle {
   			position: fixed;
   			left:calc(50vw - 100px);
   			width: 200px; height: 200px;
-  			margin-top: 100px;
+  			margin-top: 180px;
   			border-radius: 100px;
   			box-shadow: 0px 6px 18px -8px rgba(0,0,0,0.75);
   		}
@@ -59,16 +61,11 @@
   	</style>
 </head>
 <body>
-
-<div id="geo"></div>
-<div id="avg"></div>
-
 <div id="header"></div>
 
 
 <div id="card">
 	<div id="card_header">
-		<h4></h4>
 	</div>
 
 	<div id="circle">
@@ -76,6 +73,7 @@
 	</div>
 
 	<div id="minimap">
+    <h2>Loading location...</h4>
 		<img src="">
 	</div>
 
